@@ -1,5 +1,5 @@
 import sys
-import numpy
+import numpy as np
 from multiprocessing import Pool
 import streammodel_util
 from galpy.orbit import Orbit
