@@ -44,7 +44,7 @@ if 'pal5' in sys.argv:
     pal5R_coord = coord.ICRS
     pal5R_name = 'pal5_coord'
 
-    pal5_config = stream_config(obs=pal5obs, age=pal5age, sigv=pal5sigv, 
+    pal5_config = streammodel_util.stream_config(obs=pal5obs, age=pal5age, sigv=pal5sigv, 
                                 R=pal5R, R_coord=pal5R_coord, R_name=pal5R_name, 
                                 ntimes='64sampling', name=pal5name)
     configs += [pal5_config]
@@ -70,7 +70,7 @@ if 'phx' in sys.argv:
     phxR_coord = coord.Galactic
     phxR_name = 'phx_coord'
 
-    phx_config = stream_config(obs=phxobs, age=phxage, sigv=phxsigv, 
+    phx_config = streammodel_util.stream_config(obs=phxobs, age=phxage, sigv=phxsigv, 
                                 R=phxR, R_coord=phxR_coord, R_name=phxR_name, 
                                 ntimes='64sampling',name=phxname)
     configs += [phx_config]
@@ -92,7 +92,7 @@ if 'gd1' in sys.argv:
     gd1R_coord = coord.ICRS
     gd1R_name = 'gd1_coord'
 
-    gd1_config = stream_config(obs=gd1obs, age=gd1age, sigv=gd1sigv, 
+    gd1_config = streammodel_util.stream_config(obs=gd1obs, age=gd1age, sigv=gd1sigv, 
                                 R=gd1R, R_coord=gd1R_coord, R_name=gd1R_name, 
                                 ntimes='64sampling',name=gd1name)
     configs += [gd1_config]
