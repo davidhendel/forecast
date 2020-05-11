@@ -1,6 +1,6 @@
 import sys
 import numpy as np
-from multiprocessing import Pool
+import multiprocessing
 import streammodel_util
 from galpy.orbit import Orbit
 from galpy.util import save_pickles
@@ -111,16 +111,23 @@ def save_stream_model_pickles(fname, config, leading):
 if __name__ == '__main__':
     nmodels = 2*len(configs) #for leading and trailing
     print('Streams:')
-    for i in sys.argv: print(i)
+    for i in sys.argv[1:]: print(i)
     print('using ', nmodels, ' models/processes')
-    p = Pool(nmodels)
+    processes = []
     for i, config in enumerate(configs):
         print('working on '+config.name+' leading' )
         fname = config.name+'_'+config.ntimes+'_leading.pkl'
-        p.apply_async(save_stream_model_pickles(fname, config, True))
+        p = multiprocessing.Process(target=save_stream_model_pickles, args=(fname, config, True))
+        p.start()
+        processes.append(p)
         print('working on '+config.name+' trailing' )
         fname = config.name+'_'+config.ntimes+'_trailing.pkl'
-        p.apply_async(save_stream_model_pickles(fname, config, False))    
+        p = multiprocessing.Process(target=save_stream_model_pickles, args=(fname, config, False))
+        p.start()
+        processes.append(p)
+
+    for p in processes:
+        p.join()
 
 
 
