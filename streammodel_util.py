@@ -1,4 +1,6 @@
+import os
 import numpy as np
+import pickle
 from galpy.potential import MWPotential2014
 from galpy.actionAngle import actionAngleIsochroneApprox
 from galpy.actionAngle import estimateBIsochrone
@@ -13,6 +15,9 @@ import astropy.coordinates as coord
 from astropy.coordinates import SkyCoord
 from astropy.coordinates import frame_transform_graph
 from astropy.coordinates.matrix_utilities import rotation_matrix, matrix_product, matrix_transpose
+
+_DATADIR  =  os.environ['_FORECAST_DATA_DIR']
+_LOCALDIR =  os.environ['_FORECAST_LOCAL_DIR']
 
 R0,V0= 8., 220.
 
@@ -69,7 +74,36 @@ class stream_config():
         self.leading=leading
         self.name=name
     
+    def load(self):
+        """
+        NAME:
 
+           load
+
+        PURPOSE:
+
+           Load pickled streamdf model & add coordinate transformations to Astropy frame graph, if relevant
+
+        INPUT:
+            
+            none
+            
+        OUTPUT:
+        
+            none
+            
+        """
+        if os.path.exists(_DATADIR+'model_pickles'++self.name+'_'+self.ntimes+'_leading.pkl'):
+            self.sdf.leading  = pickle.load(_DATADIR+self.name+'_'+self.ntimes+'_leading.pkl',  encoding='latin1')
+            print('Leading DF loaded')
+        if os.path.exists(_DATADIR+'model_pickles'+self.name+'_'+self.ntimes+'_trailing.pkl'):
+            self.sdf.trailing = pickle.load(_DATADIR+self.name+'_'+self.ntimes+'_trailing.pkl', encoding='latin1')
+            print('Trailing DF loaded')
+        if (self.R is not None):
+            add_stream_coord(self.R, self.R_coord, self.R_name, sdf=self)
+            
+            
+        
 
 class stream_coord(coord.BaseCoordinateFrame):
     """
