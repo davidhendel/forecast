@@ -21,6 +21,23 @@ _LOCALDIR =  os.environ['_FORECAST_LOCAL_DIR']
 
 R0,V0= 8., 220.
 
+def sample(stream_config, tail='leading', n=1000, Xrs = 3., plummer=False, rsfac=1.,
+            massexp=-2, massrange = [5,9], cutoff = 5., rate=None, ratemod = 1.):
+    
+    sample_GM = lambda: powerlaw_wcutoff(massrange, cutoff)
+    if rate is None:
+        rate_range= np.arange(massrange[0]+0.5, massrange[1]+0.5,1)
+        rate = ratemod*np.sum([dNencdm(stream_config.sdf[tail],10.**r,
+                                          Xrs=Xrs,plummer=plummer,rsfac=rsfac,sigma=120.) for r in rate_range])
+    sample_rs= lambda x: rs(x*bovy_conversion.mass_in_1010msol(V0,R0)*10.**10.,plummer=plummer,rsfac=rsfac)
+    stream_config.sdf[tail].simulate(rate=rate,sample_GM=sample_GM,sample_rs=sample_rs, Xrs=Xrs,sigma=120./220.)
+    samples = stream_config.sdf[tail].sample(n=n,lb=True)
+    sc = SkyCoord(samples[0]*u.deg,samples[1]*u.deg,distance=samples[2]*u.kpc,frame='galactic')
+    if hasattr(stream_config,'stream_coord'):
+        sc = sc.transform_to(stream_config.stream_coord)
+    return sc
+
+
 def parse_times(times,age):
     if 'sampling' in times:
         nsam= int(times.split('sampling')[0])

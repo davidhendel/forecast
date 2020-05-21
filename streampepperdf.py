@@ -270,6 +270,7 @@ class streampepperdf(streamdf):
         # Number of impacts
         if nimpact is None:
             nimpact= numpy.random.poisson(rate)
+        self.nimpact=nimpact
         # Sample times propto td-time
         timpacts= numpy.array(self._uniq_timpact)[\
             numpy.random.choice(len(self._uniq_timpact),size=nimpact,
@@ -1079,7 +1080,7 @@ class streampepperdf(streamdf):
         # angles
         Om,angle,dt= super(streampepperdf,self)._sample_aAt(n)
         #if nimpact==0 then this is the desired result and iterating over _timpact will fail
-        if nimpact==0: return (Om,angle,dt)
+        if self.nimpact==0: return (Om,angle,dt)
         else:
             # Rewind angles to the first impact, then apply all kicks, 
             # and run forward again
