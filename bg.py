@@ -6,7 +6,10 @@ _DATADIR  =  os.environ['_FORECAST_DATA_DIR']
 _LOCALDIR =  os.environ['_FORECAST_LOCAL_DIR']
 
 
-def run_galaxia(ebf_fname, param_fname, outputDir = './', appMagLimit=27, lat=0, lon=0, area=1, fSample=1, r_max=1000, make_fits=True):
+def run_galaxia(ebf_fname, param_fname, outputDir = './', appMagLimit=27, lat=130, lon=45, area=1, fSample=1, r_max=1000, make_fits=True):
+    if os.path.exists(outputDir+ebf_fname):
+        print(ebf_fname+' already exists!')
+        return
     '''make galaxia parameter file; there are more options than used here if desired.
     be careful of huge output files! the defaults here give 1.7M at (lat, lon) = (45,120) but 100G at (0,0)!'''
     paramstring =    '''outputFile                          %s
@@ -48,8 +51,7 @@ photoError                          0
     print('returncode:', completed.returncode)
     
     if make_fits:
-        print("The ebf package is (as of now) python 2 only! \\
-                  To use this you will need to pip install it in python2!")
+        #print("The ebf package is (as of now) python 2 only! \n To use this you will need to pip install it in python2!")
         subprocess.run(['python2','ebfconverter.py',outputDir+ebf_fname])
 
 
