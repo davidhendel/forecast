@@ -34,7 +34,9 @@ class stream_config():
     Simple stream model configuration helper for automation
     
     """
-    def __init__(self,obs=None, sigv=0.5, age=5.0, R=None, R_coord=None, R_name=None, ntimes='64sampling', leading=True, name=None):
+    def __init__(self,obs=None, sigv=0.5, age=5.0, R=None, 
+                 R_coord=None, R_name=None, ntimes='64sampling', leading=True, 
+                 name=None, nstars=None):
         """
         NAME:
 
@@ -62,6 +64,8 @@ class stream_config():
             
             leading: if True, model the leading tail, otherwise model the trailing tail
             
+            nstars: dict, an estimate of the number of stars in the tail (to interact with survey_config)
+            
         """
         self.obs=obs
         self.sigv=sigv
@@ -73,6 +77,7 @@ class stream_config():
         self.timpact=parse_times(ntimes, age)
         self.leading=leading
         self.name=name
+        self.nstars=nstars
     
     def load(self):
         """
@@ -213,8 +218,8 @@ def setup_streammodel(
        object
 
     HISTORY:
-
-       2020-05-08 - Started - Hendel (UofT)
+       2016 - Started - Bovy (UofT)
+       2020-05-08 - Generalized - Hendel (UofT)
 
     
 

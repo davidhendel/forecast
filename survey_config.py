@@ -4,6 +4,7 @@ import glob
 import numpy as np
 import scipy
 from astropy.table import Table
+import scipy
 from scipy.interpolate import interp1d
 import dill
 import string
@@ -11,6 +12,41 @@ import astropy.io.fits as pyfits
 _ISOCHRONE_DIR  =  os.environ['_ISOCHRONE_DIR']
 _DATADIR  =  os.environ['_FORECAST_DATA_DIR']
 _LOCALDIR =  os.environ['_FORECAST_LOCAL_DIR']
+
+def calc_nstars(stream_config, base_survey, new_surveys=[None],verbose=False):
+    if len(stream_config.nstars.keys())>1:
+        raise ValueError("Not designed to work with more than one nstars key in input")
+
+    dm = (5*np.log10(stream_config.obs.dist()*1e3)-5)
+    ms = np.linspace(0,0.82909799,1000) #this is specific to the pal5 isochrone
+    base_nstars = list(stream_config.nstars.values())[0]
+    
+    if base_survey=='all':
+        b_minmass  = 0.1
+        base_integral = scipy.integrate.quad(lambda x: x**(-0.5), b_minmass,  0.82909799)[0]
+    else:
+        b_mags1 = base_survey.isointerp[base_survey.filters[0]+'-10.06-0.0008'](ms) + dm
+        b_mags2 = base_survey.isointerp[base_survey.filters[1]+'-10.06-0.0008'](ms) + dm
+        b_maglim1 = base_survey.get_mag_limit(base_survey.filters[0])
+        b_maglim2 = base_survey.get_mag_limit(base_survey.filters[1])
+        b_minmass1 = ms[np.argmax(b_mags1   < b_maglim1)]
+        b_minmass2 = ms[np.argmax(b_mags2   < b_maglim2)]
+        b_minmass  =np.max((b_minmass1, b_minmass2))
+        base_integral = scipy.integrate.quad(lambda x: x**(-0.5), b_minmass,  0.82909799)[0]
+    
+    for survey in new_surveys:
+        mags1 = survey.isointerp[survey.filters[0]+'-10.06-0.0008'](ms) + dm
+        mags2 = survey.isointerp[survey.filters[1]+'-10.06-0.0008'](ms) + dm
+        maglim1 = survey.get_mag_limit(survey.filters[0])
+        maglim2 = survey.get_mag_limit(survey.filters[1])
+        minmass1 = ms[np.argmax(mags1   < maglim1)]
+        minmass2 = ms[np.argmax(mags2   < maglim2)]
+        minmass  =np.max((minmass1,minmass2))
+        integral = scipy.integrate.quad(lambda x: x**(-0.5), minmass,  0.82909799)[0]
+        stream_config.nstars[survey.name]=int(base_nstars*integral/base_integral)
+        if verbose==True: print(base_survey.name, b_minmass, survey.name, minmass, integral)
+
+    
         
 def get_closest(array, values):
     #`values` should be sorted
