@@ -93,11 +93,15 @@ class stream_config():
             none
             
         """
-        if os.path.exists(_DATADIR+'model_pickles'++self.name+'_'+self.ntimes+'_leading.pkl'):
-            self.sdf.leading  = pickle.load(_DATADIR+self.name+'_'+self.ntimes+'_leading.pkl',  encoding='latin1')
+        self.sdf={}
+        if os.path.exists(_DATADIR+'model_pickles/'+self.name+'_'+self.ntimes+'_leading.pkl'):
+            self.sdf['leading']  = pickle.load(
+                open(_DATADIR+'model_pickles/'+self.name+'_'+self.ntimes+'_leading.pkl', 'rb'))
             print('Leading DF loaded')
-        if os.path.exists(_DATADIR+'model_pickles'+self.name+'_'+self.ntimes+'_trailing.pkl'):
-            self.sdf.trailing = pickle.load(_DATADIR+self.name+'_'+self.ntimes+'_trailing.pkl', encoding='latin1')
+        else: print('path not found!')
+        if os.path.exists(_DATADIR+'model_pickles/'+self.name+'_'+self.ntimes+'_trailing.pkl'):
+            self.sdf['trailing']  = pickle.load(
+                open(_DATADIR+'model_pickles/'+self.name+'_'+self.ntimes+'_trailing.pkl', 'rb'))
             print('Trailing DF loaded')
         if (self.R is not None):
             add_stream_coord(self.R, self.R_coord, self.R_name, sdf=self)

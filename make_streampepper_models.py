@@ -111,7 +111,7 @@ if 'gd1' in sys.argv:
 def save_stream_model_pickles(fname, config, leading):
     model = streammodel_util.setup_streammodel(obs=config.obs, age=config.age, sigv=config.sigv,
                                                timpact=config.timpact, leading=leading)
-    save_pickles(_DATADIR+'model_pickles'+fname, model)
+    save_pickles(_DATADIR+'model_pickles/'+fname, model)
     return
 
 if __name__ == '__main__':
@@ -120,6 +120,8 @@ if __name__ == '__main__':
     for i in sys.argv[1:]: print(i)
     print('using ', nmodels, ' models/processes')
     processes = []
+    if not os.path.exists(_DATADIR+'model_pickles/'):
+        print("Expected output directory _DATADIR/model_pickles/ does not exist!")
     for i, config in enumerate(configs):
         print('working on '+config.name+' leading' )
         fname = config.name+'_'+config.ntimes+'_leading.pkl'
